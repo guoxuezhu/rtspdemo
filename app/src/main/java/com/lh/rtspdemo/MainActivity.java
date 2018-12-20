@@ -39,9 +39,61 @@ public class MainActivity extends AppCompatActivity implements MediaListenerEven
 
     @OnClick(R.id.btn_start)
     public void btn_start() {
-        progressDialog = new ProgressDialog(this);
+        if (progressDialog == null) {
+            progressDialog = new ProgressDialog(this);
+        }
         videoView.setMediaListenerEvent(this);
         videoView.setPath(et_url.getText().toString());
+        videoView.startPlay();
+    }
+
+
+    @Override
+    public void eventPlayInit(boolean openClose) {
+        Log.i("lh", "=======eventPlayInit============" + openClose);
+        if (openClose) {
+            showDialog();
+        }
+    }
+
+    @Override
+    public void eventBuffing(int event, float buffing) {
+        Log.i("lh", "=======eventBuffing============" + event + "=====buffing====" + buffing);
+        if (buffing == 100.0) {
+            stopDialog();
+        }
+    }
+
+    @Override
+    public void eventPlay(boolean isPlaying) {
+        Log.i("lh", "=======eventPlay============" + isPlaying);
+        if (!isPlaying) {
+            stopDialog();
+        }
+    }
+
+    @Override
+    public void eventStop(boolean isPlayError) {
+        Log.i("lh", "=======eventStop============" + isPlayError);
+        stopDialog();
+    }
+
+    @Override
+    public void eventError(int event, boolean show) {
+        Log.i("lh", "=======eventError============" + event + "=====show=====" + show);
+        stopDialog();
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        videoView.pause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         videoView.startPlay();
     }
 
@@ -50,47 +102,26 @@ public class MainActivity extends AppCompatActivity implements MediaListenerEven
         super.onStop();
         Log.i("lh", "=======onStop============");
         videoView.onStop();
+        stopDialog();
     }
 
     @Override
-    public void eventBuffing(int event, float buffing) {
-        Log.i("lh", "=======eventBuffing============" + event + "=====buffing====" + buffing);
-    }
-
-    long time;
-
-    @Override
-    public void eventPlayInit(boolean openClose) {
-        Log.i("lh", "=======eventPlayInit============" + openClose);
-        if (!openClose) {
-            time = System.currentTimeMillis();
-        } else {
-            long useTime = System.currentTimeMillis() - time;
-            Log.i("yyl", "打开地址时间========" + useTime);
+    protected void onDestroy() {
+        super.onDestroy();
+        if (progressDialog != null) {
+            progressDialog.dismiss();
         }
-        if (openClose)
-            progressDialog.show();
     }
 
-    @Override
-    public void eventStop(boolean isPlayError) {
-        Log.i("lh", "=======eventStop============" + isPlayError);
-        progressDialog.hide();
-    }
-
-    @Override
-    public void eventError(int event, boolean show) {
-        Log.i("lh", "=======eventError============" + event + "=====show=====" + show);
-        progressDialog.hide();
-    }
-
-    @Override
-    public void eventPlay(boolean isPlaying) {
-        Log.i("lh", "=======eventPlay============" + isPlaying);
-        if (isPlaying) {
-            long useTime = System.currentTimeMillis() - time;
-            Log.i("yyl", "延迟时间========" + useTime);
+    private void stopDialog() {
+        if (progressDialog != null) {
             progressDialog.hide();
+        }
+    }
+
+    private void showDialog() {
+        if (progressDialog != null) {
+            progressDialog.show();
         }
     }
 }
