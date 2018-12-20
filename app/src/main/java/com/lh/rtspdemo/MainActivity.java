@@ -4,10 +4,9 @@ import android.app.ProgressDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RadioButton;
 
+import org.videolan.vlc.VlcVideoView;
 import org.videolan.vlc.listener.MediaListenerEvent;
 
 import butterknife.BindView;
@@ -20,7 +19,7 @@ public class MainActivity extends AppCompatActivity implements MediaListenerEven
     EditText et_url;
 
     @BindView(R.id.rtsp_video)
-    MyVideoView videoView;
+    VlcVideoView videoView;
 
 
     private ProgressDialog progressDialog;
